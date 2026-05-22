@@ -6,8 +6,10 @@ import ProjetsList from './components/ProjetsList'
 import EtatRL from './components/EtatRL'
 import GrapheRL from './components/GrapheRL'
 import StatsAdmin from './components/StatsAdmin'
+import StudentDashboard from './components/student/StudentDashboard'
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'
+
 
 // ── Skeleton loader ───────────────────────────────────────────────────────────
 function Skeleton({ width = '100%', height = 16, borderRadius = 8, style = {} }) {
@@ -248,131 +250,17 @@ export default function Home() {
       </>
     )
   }
-
-  // ── Student view ──
-  return (
-    <>
-      <style>{`
-        @keyframes shimmerAnim { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-        @keyframes fadeSlideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes spin { to{transform:rotate(360deg)} }
-      `}</style>
-
-      <div style={{
-        display: 'flex', height: '100vh', background: 'var(--bg)',
-        color: 'var(--text)', overflow: 'hidden', fontFamily: "'DM Sans', sans-serif",
-      }}>
-
-        {/* Sidebar */}
-        <aside style={{
-          width: sidebarOpen ? 340 : 0, minWidth: sidebarOpen ? 340 : 0,
-          background: 'var(--surface)', borderRight: '1px solid var(--border)',
-          display: 'flex', flexDirection: 'column', gap: 16, padding: sidebarOpen ? 24 : 0,
-          overflowY: 'auto', overflowX: 'hidden',
-          transition: 'width 0.3s ease, min-width 0.3s ease, padding 0.3s ease',
-          flexShrink: 0,
-        }}>
-          {sidebarOpen && (
-            <>
-              {/* Top bar */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <div style={{ width: 26, height: 26, borderRadius: 7, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>⚡</div>
-                    <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 14 }}>ProjectRL</span>
-                  </div>
-                  <p style={{ fontSize: 11, color: 'var(--muted)', margin: 0 }}>
-                    🎓 <strong>{user.username}</strong>
-                  </p>
-                </div>
-                <button onClick={handleLogout} style={{
-                  fontSize: 10, background: 'none', border: '1px solid var(--border2)',
-                  color: 'var(--muted)', padding: '4px 10px', borderRadius: 7, cursor: 'pointer',
-                  fontFamily: "'DM Sans', sans-serif",
-                }}>
-                  Quitter
-                </button>
-              </div>
-
-              <StatusBadge connected={apiOk !== false} />
-
-              <SectionLabel>Profil étudiant</SectionLabel>
-              <ProfilForm onSubmit={handleRecommander} loading={loading} user={user} />
-
-              {etat && (
-                <>
-                  <SectionLabel>Agent RL — État courant</SectionLabel>
-                  <EtatRL etat={etat} />
-                </>
-              )}
-            </>
-          )}
-        </aside>
-
-        {/* Toggle sidebar button */}
-        <button
-          onClick={() => setSidebarOpen(o => !o)}
-          style={{
-            position: 'absolute', left: sidebarOpen ? 318 : -1, top: '50%',
-            transform: 'translateY(-50%)',
-            width: 22, height: 48, borderRadius: sidebarOpen ? '0 8px 8px 0' : '8px',
-            background: 'var(--surface2)', border: '1px solid var(--border)',
-            borderLeft: sidebarOpen ? 'none' : '1px solid var(--border)',
-            color: 'var(--muted)', cursor: 'pointer', fontSize: 10,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            zIndex: 10, transition: 'left 0.3s ease',
-          }}
-        >
-          {sidebarOpen ? '◂' : '▸'}
-        </button>
-
-        {/* Main content */}
-        <main style={{
-          flex: 1, background: 'var(--bg)', padding: '28px 24px',
-          display: 'flex', flexDirection: 'column', gap: 20, overflowY: 'auto',
-        }}>
-          {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-            <div>
-              <h1 style={{
-                fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 26,
-                letterSpacing: '-0.5px', color: 'var(--text)', margin: 0,
-              }}>
-                Projets recommandés
-              </h1>
-              <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 5 }}>
-                Personnalisés en temps réel par l'algorithme Actor-Critic
-              </p>
-            </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              {etat && (
-                <span style={{
-                  background: 'rgba(34,211,160,0.08)', border: '1px solid var(--green-border)',
-                  color: 'var(--green)', fontSize: 10, fontWeight: 600,
-                  padding: '5px 12px', borderRadius: 99,
-                }}>
-                  V(s) = {etat.V?.toFixed(3)} · {etat.total_feedbacks} actions
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Project list or skeleton */}
-          {loading && recommandations.length === 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[1, 2, 3].map(i => <CardSkeleton key={i} />)}
-            </div>
-          ) : (
-            <ProjetsList projets={recommandations} onFeedback={handleFeedback} />
-          )}
-
-          {/* RL graph */}
-          {etat?.historique?.length > 0 && (
-            <GrapheRL historique={etat.historique} />
-          )}
-        </main>
-      </div>
-    </>
-  )
+// ── Student view ──
+return (
+  <StudentDashboard
+    user={user}
+    recommandations={recommandations}
+    etat={etat}
+    loading={loading}
+    onRecommander={handleRecommander}
+    onFeedback={handleFeedback}
+    onLogout={handleLogout}
+    apiOk={apiOk}
+  />
+)
 }
