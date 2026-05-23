@@ -45,7 +45,7 @@ export default function StudentDashboard({ user, recommandations, etat, loading,
     <div style={{ display: "flex", height: "100vh", background: "var(--bg)", overflow: "hidden", position: "relative" }}>
       
       {/* SIDEBAR (copiée depuis le premium) */}
-      <aside style={{ width: 360, background: "var(--surface)", borderRight: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", gap: 0, overflowY: "auto", flexShrink: 0, position: "relative", zIndex: 2 }}>
+      <aside style={{ width: 420 , background: "var(--surface)", borderRight: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", gap: 0, overflowY: "auto", flexShrink: 0, position: "relative", zIndex: 2 }}>
         {/* Top bar */}
         <div style={{ padding: "20px 20px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
